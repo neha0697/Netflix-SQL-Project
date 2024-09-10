@@ -150,3 +150,71 @@ GROUP BY 1
 ORDER BY 2 DESC
 LIMIT 5;
 ```
+
+### 11. List all movies that are documentaries
+```
+SELECT * FROM netflix
+WHERE
+	type = 'Movie'
+	AND
+	listed_in ILIKE '%Documentaries%';
+```
+
+### 12. Find all content without a director
+```
+SELECT * FROM netflix
+WHERE 
+	director IS NULL;
+```
+
+### 13. Find how many movies actor 'Salman Khan' appeared in last 10 years!
+```
+SELECT
+	COUNT(*) AS movie_count
+FROM netflix
+WHERE
+	type = 'Movie'
+	AND
+	CASTS ILIKE '%Salman Khan%'
+	AND
+	release_year > EXTRACT(YEAR FROM CURRENT_DATE) - 10;
+```
+
+### 14. Find the top 10 actors who have appeared in the highest number of movies produced in India.
+```
+SELECT 
+	TRIM(UNNEST(STRING_TO_ARRAY(casts,','))) AS actors,
+	COUNT(show_id) AS movie_count
+FROM netflix
+WHERE 
+	type = 'Movie'
+	AND
+	country ILIKE '%India%'
+GROUP BY 1;
+```
+
+### 15. Categorize the content based on the presence of the keywords 'kill' and 'violence' in the description field. Label content containing these keywords as 'Bad' and all other 
+ content as 'Good'. Count how many items fall into each category.
+ ```
+SELECT 
+	content_label,
+	COUNT(*) AS total_count
+FROM(
+SELECT *,
+CASE
+	WHEN description ILIKE '%kill%' OR description ILIKE '%violence%' THEN 'Bad'
+	ELSE 'Good'
+END AS content_label
+FROM netflix
+	)
+GROUP BY content_label;
+```
+
+## Findings and Conclusion
+
+- Content Distribution: The dataset contains a diverse range of movies and TV shows with varying ratings and genres.
+- Common Ratings: Insights into the most common ratings provide an understanding of the content's target audience.
+- Geographical Insights: The top countries and the average content releases by India highlight regional content distribution.
+- Content Categorization: Categorizing content based on specific keywords helps in understanding the nature of content available on Netflix.
+  
+This analysis provides a comprehensive view of Netflix's content and can help inform content strategy and decision-making.
